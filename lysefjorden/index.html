@@ -42,7 +42,7 @@
 
         .dashboard { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); gap: 14px; }
 
-        .wind-panel, .rain-panel { min-width: 0; border: 1px solid rgba(24, 58, 55, .08); border-radius: 10px; }
+        .wind-panel, .combined-panel { min-width: 0; border: 1px solid rgba(24, 58, 55, .08); border-radius: 10px; }
 
         .wind-panel { position: relative; overflow: hidden; min-height: 310px; padding: 25px 28px; color: #f7fbf7; background: linear-gradient(120deg, #164f4d 0%, #236e68 59%, #43877a 100%); }
 
@@ -98,7 +98,14 @@
 
         .updated { position: relative; z-index: 1; margin: 13px 0 0; color: #c5e0d6; font-size: 11px; }
 
-        .rain-panel { display: flex; flex-direction: column; padding: 23px 24px 18px; background: rgba(251, 252, 250, .88); }
+        .combined-panel { display: flex; flex-direction: column; min-height: 310px; padding: 23px 24px 18px; color: #f7fbf7; background: linear-gradient(120deg, #164f4d 0%, #236e68 59%, #43877a 100%); }
+        .rain-panel { display: flex; flex-direction: column; flex: 1; }
+        .combined-panel .section-kicker, .combined-panel .rain-summary-label, .combined-panel .forecast-time, .combined-panel .forecast-mm, .combined-panel .weather-status, .combined-panel .tide-source, .combined-panel .tide-date, .combined-panel .tide-height, .combined-panel .tide-status { color: #c5e0d6; }
+        .combined-panel .rain-percent-sign, .combined-panel .rain-icon { color: #f1c764; }
+        .combined-panel .forecast { border-top-color: rgba(245,251,247,.22); }
+        .combined-panel .tide { margin-top: 18px; padding: 17px 0 0; border: 0; border-top: 1px solid rgba(245,251,247,.22); border-radius: 0; background: transparent; }
+        .combined-panel .tide-event { border-top-color: rgba(245,251,247,.14); }
+        .combined-panel .tide-event:nth-child(odd) { border-right-color: rgba(245,251,247,.14); }
 
         .section-top { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
 
@@ -156,7 +163,7 @@
             main { width: min(100% - 28px, 560px); padding-top: 24px; }
             .dashboard { grid-template-columns: 1fr; }
             .wind-panel { min-height: 290px; }
-            .rain-panel { min-height: 260px; }
+            .combined-panel { min-height: 0; }
         }
 
         @media (max-width: 420px) {
@@ -186,7 +193,8 @@
             .reading-label { font-size: 9px; }
             .reading-value { margin-top: 3px; font-size: 12px; }
             .updated { margin-top: 7px; font-size: 9px; }
-            .rain-panel { min-height: 0; padding: 11px 13px 9px; }
+            .combined-panel { min-height: 0; padding: 11px 13px 9px; }
+            .rain-panel { min-height: 0; }
             .section-kicker { margin-bottom: 3px; font-size: 9px; }
             h2 { font-size: 16px; }
             .rain-summary { gap: 3px; margin: 7px 0 8px; }
@@ -198,7 +206,7 @@
             .rain-icon { height: 19px; margin: 2px auto; font-size: 14px; line-height: 19px; }
             .forecast-probability { font-size: 10px; }
             .weather-status { min-height: 0; margin-top: 7px; font-size: 9px; }
-            .tide { margin-top: 8px; padding: 11px 12px 5px; }
+            .combined-panel .tide { margin-top: 12px; padding: 12px 0 0; }
             .tide-heading { align-items: baseline; gap: 4px; }
             .tide-source { font-size: 9px; }
             .tide-events { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 7px; }
@@ -214,9 +222,8 @@
         }
 
         @media (prefers-reduced-motion: no-preference) {
-            .wind-panel, .rain-panel, .tide { animation: arrive 420ms ease-out both; }
-            .rain-panel { animation-delay: 80ms; }
-            .tide { animation-delay: 140ms; }
+            .wind-panel, .combined-panel { animation: arrive 420ms ease-out both; }
+            .combined-panel { animation-delay: 80ms; }
             @keyframes arrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
         }
     </style>
@@ -261,7 +268,8 @@
                 <p class="updated" id="updated" role="status" aria-live="polite">Henter målinger ...</p>
             </article>
 
-            <article class="rain-panel" aria-labelledby="rain-title">
+            <article class="combined-panel" aria-label="Værmelding og flo og fjære">
+              <div class="rain-panel" aria-labelledby="rain-title">
                 <div class="section-top">
                     <div>
                         <p class="section-kicker">Værmelding</p>
@@ -274,8 +282,7 @@
                 </div>
                 <ol class="forecast" id="forecast-hours" aria-label="Regnprognose time for time"></ol>
                 <p class="weather-status" id="weather-status" role="status" aria-live="polite">Henter værmelding ...</p>
-            </article>
-        </section>
+              </div>
 
         <section class="tide" aria-labelledby="tide-title">
             <div class="tide-heading">
@@ -284,6 +291,8 @@
             </div>
             <ol class="tide-events" id="tide-events" aria-label="Neste flo og fjære"></ol>
             <p class="tide-status" id="tide-status" role="status" aria-live="polite">Henter tidevann ...</p>
+        </section>
+            </article>
         </section>
 
     </main>
