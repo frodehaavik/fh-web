@@ -113,17 +113,19 @@
 
         h2 { margin: 0; font-size: 19px; line-height: 1.25; }
 
-        .rain-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 19px 0 15px; }
+        .rain-summary { display: grid; grid-template-columns: 1fr 1fr; margin: 19px 0 15px; }
 
-        .rain-summary-group { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+        .rain-summary-group { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 4px; padding: 0 14px 0 4px; }
 
-        .rain-summary-group:last-child { align-items: flex-end; text-align: right; }
+        .rain-summary-group:last-child { align-items: flex-end; padding: 0 4px 0 14px; border-left: 2px solid rgba(241, 199, 100, .75); text-align: right; }
 
         .rain-summary-value { display: flex; align-items: baseline; gap: 5px; }
 
         .rain-percent, .rain-temperature { font-size: 48px; font-weight: 730; line-height: 1; font-variant-numeric: tabular-nums; }
 
         .rain-percent-sign, .rain-temperature-unit { color: #f1c764; font-size: 23px; font-weight: 650; }
+
+        .rain-summary-heading { margin: 0; color: #f1c764; font-size: 12px; font-weight: 750; letter-spacing: .8px; text-transform: uppercase; }
 
         .rain-summary-label { color: #c5e0d6; font-size: 12px; }
 
@@ -205,11 +207,14 @@
             .rain-panel { min-height: 0; }
             .section-kicker { margin-bottom: 3px; font-size: 9px; }
             h2 { font-size: 16px; }
-            .rain-summary { gap: 8px; margin: 7px 0 8px; }
+            .rain-summary { margin: 7px 0 8px; }
             .rain-summary-group { gap: 3px; }
+            .rain-summary-group { padding-right: 8px; }
+            .rain-summary-group:last-child { padding-left: 8px; }
             .rain-summary-value { gap: 3px; }
             .rain-percent, .rain-temperature { font-size: 34px; }
             .rain-percent-sign, .rain-temperature-unit { font-size: 18px; }
+            .rain-summary-heading { font-size: 9px; }
             .rain-summary-label { font-size: 10px; }
             .forecast { padding-top: 8px; }
             .forecast-time, .forecast-mm { font-size: 9px; }
@@ -284,21 +289,23 @@
                 <div class="section-top">
                     <div>
                         <p class="section-kicker">Værmelding</p>
-                        <h2 id="rain-title">Regn de neste 6 timene</h2>
+                        <h2 id="rain-title">Regn og Grader</h2>
                     </div>
                 </div>
                 <div class="rain-summary" aria-live="polite">
                     <div class="rain-summary-group">
+                        <p class="rain-summary-heading">Regn</p>
                         <div class="rain-summary-value">
                             <span class="rain-percent" id="rain-percent">-</span><span class="rain-percent-sign">%</span>
                         </div>
                         <span class="rain-summary-label" id="rain-summary-label">sannsynlighet</span>
                     </div>
                     <div class="rain-summary-group">
+                        <p class="rain-summary-heading">Grader</p>
                         <div class="rain-summary-value">
                             <span class="rain-temperature" id="rain-temperature">-</span><span class="rain-temperature-unit">°C</span>
                         </div>
-                        <span class="rain-summary-label">temperatur</span>
+                        <span class="rain-summary-label">neste time</span>
                     </div>
                 </div>
                 <ol class="forecast" id="forecast-hours" aria-label="Værprognose time for time"></ol>
