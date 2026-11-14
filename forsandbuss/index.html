@@ -1,166 +1,165 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Bussavganger Forsand</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Forsand Buss</title>
     <style>
         :root {
-            --bg: #ebf1ee;
-            --paper: rgba(255, 255, 255, 0.9);
+            --bg: #edf3f0;
+            --paper: rgba(255,255,255,0.82);
             --panel: #ffffff;
-            --ink: #163a38;
-            --muted: #5f7c78;
-            --line: #dfeae6;
-            --brand: #0e6763;
-            --brand-2: #255f60;
-            --brand-soft: #dcf0ed;
-            --gold: #d8a74b;
-            --success: #2a9d76;
-            --danger: #c85d5a;
-            --shadow: 0 18px 38px rgba(18, 52, 53, 0.12);
+            --ink: #1a2a2a;
+            --muted: #5a6f6d;
+            --line: #dfe9e5;
+            --brand: #0d6763;
+            --brand-2: #1b7d78;
+            --brand-soft: #ddf1ee;
+            --accent: #f1b75d;
+            --success: #2b9a74;
+            --danger: #d15754;
+            --shadow: 0 18px 42px rgba(12, 46, 47, 0.14);
         }
 
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.8), transparent 26%), linear-gradient(155deg, #edf3f0 0%, #e8f0ee 43%, #f4efe3 100%);
+            color: var(--ink);
         }
 
         body {
-            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background: radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 28%),
-                        linear-gradient(160deg, #edf4f0 0%, #e8efe9 50%, #f4efe1 100%);
-            min-height: 100vh;
-            color: var(--ink);
-            padding: 18px 12px 32px;
+            padding: 20px 12px 32px;
         }
 
-        .container {
-            max-width: 880px;
+        .app-shell {
+            max-width: 980px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.36);
-            border: 1px solid rgba(28, 78, 75, 0.12);
-            border-radius: 22px;
+            background: rgba(255,255,255,0.38);
+            border: 1px solid rgba(24, 77, 75, 0.12);
+            border-radius: 24px;
             box-shadow: var(--shadow);
             overflow: hidden;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
         }
 
-        header {
-            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 38%, #517f75 100%);
+        .topbar {
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 40%, #5a7a74 100%);
             color: white;
-            padding: 28px 28px 20px;
+            padding: 26px 26px 18px;
             position: relative;
             overflow: hidden;
         }
 
-        header::after {
+        .topbar::after {
             content: "";
             position: absolute;
             right: -80px;
-            bottom: -120px;
-            width: 250px;
-            height: 250px;
+            bottom: -100px;
+            width: 280px;
+            height: 280px;
             border-radius: 50%;
             background: rgba(255,255,255,0.08);
-            box-shadow: 0 0 0 28px rgba(255,255,255,0.02), 0 0 0 58px rgba(255,255,255,0.02);
+            box-shadow: 0 0 0 30px rgba(255,255,255,0.02), 0 0 0 60px rgba(255,255,255,0.02);
         }
 
-        .header-inner {
+        .topbar-inner {
             position: relative;
             z-index: 1;
             display: flex;
-            align-items: end;
             justify-content: space-between;
-            gap: 16px;
+            align-items: flex-end;
+            gap: 14px;
         }
 
         .eyebrow {
-            margin: 0 0 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
+            margin: 0 0 10px;
+            font-size: 0.72rem;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: rgba(235, 246, 242, 0.82);
+            font-weight: 800;
+            color: rgba(234, 247, 244, 0.82);
         }
 
         h1 {
-            font-size: clamp(1.8rem, 2vw + 1rem, 2.8rem);
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            line-height: 1.1;
+            margin: 0;
+            font-size: clamp(2rem, 2vw + 1.1rem, 3rem);
+            line-height: 1.08;
+            letter-spacing: -0.05em;
         }
 
-        .status-pill {
+        .live-pill {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 12px;
-            border-radius: 999px;
             background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.18);
-            color: #f4fbf9;
-            font-size: 0.76rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
             white-space: nowrap;
         }
 
-        .status-pill::before {
+        .live-pill::before {
             content: "";
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #8fe1ae;
-            box-shadow: 0 0 12px rgba(143, 225, 174, 0.8);
+            background: #8fe2af;
+            box-shadow: 0 0 12px rgba(143, 226, 175, 0.9);
         }
 
-        .hero-card {
+        .hero {
             margin: -10px 22px 0;
+            padding: 18px 20px 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,250,248,0.96));
+            border: 1px solid rgba(11, 92, 88, 0.12);
+            border-radius: 18px;
             position: relative;
             z-index: 2;
-            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(244,249,247,0.95));
-            border: 1px solid rgba(14, 103, 99, 0.1);
-            border-radius: 18px;
-            box-shadow: 0 10px 24px rgba(16, 74, 73, 0.12);
-            padding: 18px 20px;
+            box-shadow: 0 10px 24px rgba(6, 52, 49, 0.1);
         }
 
-        .meta-row {
+        .hero-top {
             display: flex;
-            justify-content: space-between;
-            gap: 12px;
             align-items: center;
+            justify-content: space-between;
+            gap: 10px;
             margin-bottom: 12px;
         }
 
-        .meta-label {
+        .label {
             font-size: 0.7rem;
-            font-weight: 800;
             letter-spacing: 0.12em;
             text-transform: uppercase;
             color: var(--muted);
+            font-weight: 800;
         }
 
-        .meta-badge {
+        .badge {
             display: inline-flex;
             align-items: center;
+            padding: 6px 10px;
             border-radius: 999px;
             background: var(--brand-soft);
             color: var(--brand);
-            padding: 6px 10px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
-        .next-bus {
+        .next-row {
             display: flex;
             align-items: end;
             justify-content: space-between;
@@ -168,101 +167,127 @@
             flex-wrap: wrap;
         }
 
-        .next-bus strong {
-            display: block;
-            font-size: clamp(2rem, 2vw + 0.9rem, 3.2rem);
+        .next-time {
+            font-size: clamp(2.2rem, 2vw + 1rem, 3.2rem);
             line-height: 1;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            color: var(--ink);
+            font-weight: 900;
+            letter-spacing: -0.06em;
+            margin: 0;
         }
 
-        .next-bus small {
-            display: block;
+        .next-meta {
+            margin: 0;
             color: var(--muted);
             font-size: 0.9rem;
             line-height: 1.5;
-            font-weight: 600;
             text-align: right;
+            font-weight: 600;
         }
 
-        .control-panel {
+        .controls {
+            padding: 16px 22px 0;
+        }
+
+        .stop-picker {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .stop-btn, .mode-btn {
+            appearance: none;
+            border: 1px solid rgba(13, 103, 99, 0.16);
+            background: rgba(13, 103, 99, 0.04);
+            color: var(--muted);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .stop-btn {
+            flex: 1 1 130px;
+            min-width: 0;
+        }
+
+        .stop-btn.active, .mode-btn.active {
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 10px 18px rgba(13, 103, 99, 0.18);
+        }
+
+        .mode-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            padding: 18px 22px 0;
             flex-wrap: wrap;
         }
 
-        .direction-toggle {
+        .mode-toggle {
             display: inline-flex;
-            background: rgba(14, 103, 99, 0.08);
-            border: 1px solid rgba(14, 103, 99, 0.12);
+            gap: 6px;
+            background: rgba(13, 103, 99, 0.06);
+            border: 1px solid rgba(13,103,99,0.12);
             border-radius: 12px;
             padding: 5px;
-            gap: 6px;
         }
 
-        .direction-btn {
-            border: none;
-            background: transparent;
-            color: var(--muted);
-            font: inherit;
-            font-size: 0.92rem;
-            font-weight: 700;
+        .mode-btn {
+            padding: 10px 14px;
             border-radius: 9px;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .direction-btn.active {
-            background: linear-gradient(135deg, #0f6d68, #1a8a7a);
-            color: white;
-            box-shadow: 0 8px 18px rgba(15, 109, 104, 0.2);
+            min-width: 120px;
         }
 
         .last-updated {
-            margin-left: auto;
             color: var(--muted);
             font-size: 0.76rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-weight: 800;
+            letter-spacing: 0.03em;
         }
 
-        .loading,
-        .error,
-        .no-departures {
-            padding: 34px 22px 42px;
-            text-align: center;
+        .status-panel {
+            padding: 0 18px 18px;
+        }
+
+        .loading, .error, .empty-state {
+            background: rgba(255,255,255,0.7);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 32px 18px;
             color: var(--muted);
-            font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
+            text-align: center;
+            margin: 18px;
         }
 
         .error {
             color: var(--danger);
-            background: rgba(200, 93, 90, 0.05);
+            border-color: rgba(209, 87, 84, 0.2);
+            background: rgba(209, 87, 84, 0.04);
         }
 
         .route-details {
-            margin: 0 18px 20px;
+            margin: 0 18px 18px;
             border: 1px solid var(--line);
-            border-radius: 14px;
+            border-radius: 16px;
             background: rgba(255,255,255,0.72);
             overflow: hidden;
         }
 
         .route-details summary {
-            cursor: pointer;
             list-style: none;
+            cursor: pointer;
             padding: 14px 16px;
-            font-size: 0.88rem;
-            font-weight: 800;
-            letter-spacing: 0.04em;
+            font-size: 0.77rem;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             color: var(--brand);
+            font-weight: 800;
         }
 
         .route-details summary::-webkit-details-marker {
@@ -271,244 +296,184 @@
 
         .route-details[open] summary {
             border-bottom: 1px solid var(--line);
-            background: rgba(14, 103, 99, 0.04);
+            background: rgba(13,103,99,0.04);
         }
 
         .route-schedule {
             padding: 10px 14px 14px;
         }
 
-        .route-schedule-grid {
+        .schedule-grid {
+            list-style: none;
+            padding: 0;
+            margin: 0;
             display: grid;
             gap: 8px;
-            margin: 0;
-            padding: 0;
-            list-style: none;
         }
 
-        .route-schedule-row {
+        .schedule-row {
             display: grid;
             grid-template-columns: auto 1fr auto;
             gap: 10px;
             align-items: center;
             padding: 9px 10px;
-            border: 1px solid var(--line);
             border-radius: 10px;
-            font-size: 0.82rem;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.8);
             color: var(--ink);
-            background: rgba(255,255,255,0.78);
+            font-size: 0.84rem;
         }
 
-        .route-schedule-time {
+        .schedule-time {
             font-weight: 800;
-            font-variant-numeric: tabular-nums;
             color: var(--brand);
+            font-variant-numeric: tabular-nums;
         }
 
-        .route-schedule-dest {
-            font-weight: 600;
+        .schedule-destination {
+            font-weight: 700;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .route-schedule-status {
+        .schedule-status {
             color: var(--muted);
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
         .departures {
-            padding: 16px 18px 20px;
+            padding: 0 18px 18px;
         }
 
-        .departure {
+        .departure-card {
             display: grid;
-            grid-template-columns: auto minmax(0, 1fr) auto;
+            grid-template-columns: auto minmax(0,1fr) auto;
             gap: 14px;
             align-items: center;
-            background: rgba(255,255,255,0.72);
+            background: rgba(255,255,255,0.76);
             border: 1px solid var(--line);
             border-radius: 16px;
-            padding: 16px 14px;
+            padding: 14px 12px;
             margin-top: 10px;
-            box-shadow: 0 6px 14px rgba(17, 38, 36, 0.04);
+            box-shadow: 0 6px 16px rgba(8, 48, 46, 0.05);
         }
 
-        .line-number {
-            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+        .line-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
             color: white;
-            min-width: 56px;
-            text-align: center;
-            padding: 11px 12px;
-            border-radius: 12px;
             font-size: 1.2rem;
-            font-weight: 800;
+            font-weight: 900;
             line-height: 1;
-            box-shadow: 0 8px 20px rgba(15, 109, 104, 0.18);
+            box-shadow: 0 10px 20px rgba(14, 103, 99, 0.18);
         }
 
-        .destination {
+        .departure-main {
             min-width: 0;
         }
 
-        .destination-name {
-            font-size: 1.02rem;
-            font-weight: 700;
-            color: var(--ink);
+        .route-name {
+            margin: 0;
+            font-size: 1.03rem;
+            font-weight: 800;
             line-height: 1.35;
         }
 
-        .quay {
+        .route-stop {
             margin-top: 4px;
-            font-size: 0.78rem;
             color: var(--muted);
-            font-weight: 600;
+            font-size: 0.78rem;
+            font-weight: 700;
         }
 
-        .time-info {
+        .time-side {
             text-align: right;
             white-space: nowrap;
         }
 
         .departure-time {
             font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--ink);
-            line-height: 1.2;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
         }
 
-        .arrival-time {
-            font-size: 0.72rem;
-            color: var(--muted);
-            margin-top: 3px;
-            font-weight: 700;
-        }
-
-        .countdown {
+        .time-sub {
             margin-top: 4px;
-            font-size: 0.76rem;
+            font-size: 0.72rem;
+            font-weight: 800;
             color: var(--muted);
-            font-weight: 700;
         }
 
-        .realtime {
-            color: var(--success);
-        }
+        .realtime { color: var(--success); }
+        .delayed { color: var(--danger); }
 
-        .delayed {
-            color: var(--danger);
-        }
-
-        @media (max-width: 620px) {
-            body {
-                padding: 10px 8px 24px;
-            }
-
-            header {
-                padding: 18px 18px 16px;
-            }
-
-            .header-inner {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .status-pill {
-                margin-top: 6px;
-            }
-
-            .hero-card {
-                margin: -2px 14px 0;
-                padding: 14px 16px;
-            }
-
-            .meta-row {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .next-bus {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .next-bus small {
-                text-align: left;
-            }
-
-            .control-panel {
-                padding: 16px 14px 0;
-            }
-
-            .direction-toggle {
-                width: 100%;
-            }
-
-            .direction-btn {
-                flex: 1;
-                padding: 10px 12px;
-            }
-
-            .last-updated {
-                width: 100%;
-                text-align: right;
-                margin-left: 0;
-            }
-
-            .departures {
-                padding: 12px 12px 18px;
-            }
-
-            .departure {
-                grid-template-columns: auto 1fr;
-                align-items: start;
-                gap: 10px 12px;
-            }
-
-            .time-info {
-                grid-column: 2;
-                text-align: left;
-                justify-self: start;
-            }
+        @media (max-width: 640px) {
+            body { padding: 10px 8px 20px; }
+            .topbar { padding: 18px 18px 14px; }
+            .topbar-inner { align-items: flex-start; flex-direction: column; }
+            .hero { margin: -2px 14px 0; padding: 14px 16px 10px; }
+            .hero-top, .next-row, .mode-row { align-items: flex-start; flex-direction: column; }
+            .next-meta { text-align: left; }
+            .controls { padding: 14px 14px 0; }
+            .stop-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .stop-btn, .mode-btn { width: 100%; }
+            .mode-toggle { width: 100%; }
+            .last-updated { width: 100%; text-align: right; }
+            .departure-card { grid-template-columns: auto 1fr; gap: 10px 12px; }
+            .time-side { grid-column: 2; text-align: left; }
+            .route-details, .departures, .status-panel { margin-left: 10px; margin-right: 10px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-inner">
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="topbar-inner">
                 <div>
                     <p class="eyebrow">Rutenett · Forsand</p>
-                    <h1 id="headerTitle">Bussavganger Forsand</h1>
+                    <h1 id="headerTitle">Buss i Forsand</h1>
                 </div>
-                <span class="status-pill" id="headerStatus">Live</span>
+                <span class="live-pill" id="headerStatus">Live</span>
             </div>
         </header>
 
-        <div class="hero-card" aria-live="polite">
-            <div class="meta-row">
-                <span class="meta-label">Neste buss</span>
-                <span class="meta-badge" id="serviceState">Sjekker</span>
+        <section class="hero" aria-live="polite">
+            <div class="hero-top">
+                <span class="label">Neste buss</span>
+                <span class="badge" id="serviceState">Sjekker</span>
             </div>
-            <div class="next-bus">
-                <div>
-                    <strong id="nextBusTime">--:--</strong>
+            <div class="next-row">
+                <p class="next-time" id="nextBusTime">--:--</p>
+                <p class="next-meta" id="nextBusMeta">Laster avganger...</p>
+            </div>
+        </section>
+
+        <div class="controls">
+            <div class="stop-picker" aria-label="Velg holdeplass">
+                <button class="stop-btn active" type="button" data-stop="forsand">Forsand</button>
+                <button class="stop-btn" type="button" data-stop="jorpeland">Jørpeland</button>
+            </div>
+
+            <div class="mode-row">
+                <div class="mode-toggle" aria-label="Velg retning">
+                    <button class="mode-btn active" type="button" data-mode="from">Fra holdeplass</button>
+                    <button class="mode-btn" type="button" data-mode="to">Til holdeplass</button>
                 </div>
-                <small id="nextBusMeta">Laster data...</small>
+                <div class="last-updated" id="lastUpdated">Laster data...</div>
             </div>
         </div>
 
-        <div class="control-panel">
-            <div class="direction-toggle" aria-label="Velg retning">
-                <button class="direction-btn active" id="btnFra" type="button">Fra Forsand</button>
-                <button class="direction-btn" id="btnTil" type="button">Til Forsand</button>
-            </div>
-            <div class="last-updated">Laster data...</div>
-        </div>
-
-        <div id="content" class="loading">Henter sanntidsdata...</div>
+        <div id="statusPanel" class="status-panel"></div>
 
         <details id="routeDetails" class="route-details">
             <summary>Vis hele ruten</summary>
@@ -517,12 +482,30 @@
     </div>
 
     <script>
-        const QUAY_JORPELAND = 'NSR:Quay:45500';
         const QUAY_FORSAND = 'NSR:Quay:48722';
+        const QUAY_JORPELAND = 'NSR:Quay:45500';
         const ENTUR_API = 'https://api.entur.io/journey-planner/v3/graphql';
 
-        let currentDirection = 'fra';
-        let currentQuayId = QUAY_FORSAND;
+        const STOP_CONFIG = {
+            forsand: { label: 'Forsand', quayId: QUAY_FORSAND, opposite: 'jorpeland' },
+            jorpeland: { label: 'Jørpeland', quayId: QUAY_JORPELAND, opposite: 'forsand' }
+        };
+
+        let selectedStop = 'forsand';
+        let selectedMode = 'from';
+        let currentQuayId = STOP_CONFIG[selectedStop].quayId;
+
+        function updateHeader() {
+            const stopName = STOP_CONFIG[selectedStop].label;
+            const title = selectedMode === 'from' ? `Buss fra ${stopName}` : `Buss til ${stopName}`;
+            document.getElementById('headerTitle').textContent = title;
+            document.querySelectorAll('.stop-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.stop === selectedStop);
+            });
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === selectedMode);
+            });
+        }
 
         function isWeekend(date) {
             const day = date.getDay();
@@ -558,28 +541,40 @@
             return `Om ${hours}t ${mins}m`;
         }
 
-        function getDirectionMatch(call, direction) {
-            const destinationText = ((call.destinationDisplay && call.destinationDisplay.frontText) || '').toLowerCase();
+        function describeRouteTarget() {
+            const stop = STOP_CONFIG[selectedStop];
+            const opposite = STOP_CONFIG[stop.opposite].label;
+            return selectedMode === 'from' ? `Mot ${opposite}` : `Fra ${opposite}`;
+        }
 
-            if (direction === 'fra') {
-                return destinationText.includes('jørpeland') || destinationText.includes('stavanger');
+        function getMatchText() {
+            const stopName = STOP_CONFIG[selectedStop].label.toLowerCase();
+            return selectedMode === 'from'
+                ? (stopName === 'forsand' ? 'jørpeland' : 'forsand')
+                : stopName;
+        }
+
+        function filterCalls(call) {
+            const text = ((call.destinationDisplay && call.destinationDisplay.frontText) || '').toLowerCase();
+            const target = getMatchText();
+            if (selectedMode === 'from') {
+                return text.includes(target) || text.includes('stavanger');
             }
-
-            return true;
+            return text.includes(target);
         }
 
         function getNextDeparture(departures) {
             if (!Array.isArray(departures) || !departures.length) return null;
 
             const now = Date.now();
-            const futureDepartures = departures.filter(call => {
+            const future = departures.filter(call => {
                 const departureTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
                 return departureTime.getTime() >= now;
             });
 
-            if (!futureDepartures.length) return null;
+            if (!future.length) return null;
 
-            return futureDepartures.reduce((earliest, current) => {
+            return future.reduce((earliest, current) => {
                 const earliestTime = new Date(earliest.expectedDepartureTime || earliest.aimedDepartureTime).getTime();
                 const currentTime = new Date(current.expectedDepartureTime || current.aimedDepartureTime).getTime();
                 return currentTime < earliestTime ? current : earliest;
@@ -594,238 +589,220 @@
 
             if (!nextDeparture) {
                 nextBusTime.textContent = 'Ingen buss';
-                nextBusMeta.textContent = 'Ingen avganger er registrert for de nærmeste dagene';
+                nextBusMeta.textContent = 'Ingen avganger funnet for valgt holdeplass og retning';
                 serviceState.textContent = 'Ingen rute';
                 headerStatus.textContent = 'Stengt';
                 return;
             }
 
             const departureTime = new Date(nextDeparture.expectedDepartureTime || nextDeparture.aimedDepartureTime);
-            const directionText = currentDirection === 'fra' ? 'Mot Jørpeland' : 'Mot Forsand';
-            const summaryText = `${formatDate(departureTime)} · ${directionText} · ${getCountdown(nextDeparture.expectedDepartureTime || nextDeparture.aimedDepartureTime)}`;
+            const summary = `${formatDate(departureTime)} · ${describeRouteTarget()} · ${getCountdown(nextDeparture.expectedDepartureTime || nextDeparture.aimedDepartureTime)}`;
 
             nextBusTime.textContent = formatTime(nextDeparture.expectedDepartureTime || nextDeparture.aimedDepartureTime);
-            nextBusMeta.textContent = summaryText;
+            nextBusMeta.textContent = summary;
             serviceState.textContent = isWeekend(departureTime) ? 'Helg' : 'Aktiv';
             headerStatus.textContent = isWeekend(departureTime) ? 'Helg' : 'Live';
         }
 
         async function fetchDepartures() {
-            const query = `
-            {
-              quay(id: "${currentQuayId}") {
-                name
-                estimatedCalls(numberOfDepartures: 80, timeRange: 604800) {
-                  expectedDepartureTime
-                  aimedDepartureTime
-                  realtime
-                  destinationDisplay {
-                    frontText
-                  }
-                  serviceJourney {
-                    id
-                    line {
-                      publicCode
-                      transportMode
-                    }
-                    estimatedCalls {
-                      quay {
-                        name
-                        id
-                      }
-                      aimedDepartureTime
-                      expectedDepartureTime
-                      aimedArrivalTime
-                      expectedArrivalTime
-                    }
-                  }
-                }
-              }
-            }`;
-
             try {
+                const query = `
+                    query {
+                      quay(id: "${currentQuayId}") {
+                        name
+                        estimatedCalls(numberOfDepartures: 80, timeRange: 604800) {
+                          expectedDepartureTime
+                          aimedDepartureTime
+                          realtime
+                          destinationDisplay {
+                            frontText
+                          }
+                          serviceJourney {
+                            line {
+                              publicCode
+                            }
+                            estimatedCalls {
+                              quay {
+                                name
+                                id
+                              }
+                              expectedArrivalTime
+                              aimedArrivalTime
+                            }
+                          }
+                        }
+                      }
+                    }
+                `;
+
                 const response = await fetch(ENTUR_API, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'ET-Client-Name': 'fhaavik-forsand-buss'
+                        'ET-Client-Name': 'forsand-buss-app'
                     },
                     body: JSON.stringify({ query })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP-feil: ${response.status}`);
+                    throw new Error(`Kunne ikke hente avganger (${response.status})`);
                 }
 
                 const data = await response.json();
-
                 if (data.errors) {
-                    throw new Error(data.errors[0].message);
+                    throw new Error(data.errors[0].message || 'Ukjent feil fra Entur');
                 }
 
                 return data.data;
             } catch (error) {
-                console.error('Feil ved henting av data:', error);
+                console.error(error);
                 throw error;
             }
         }
 
-        function getArrivalTimes(estimatedCalls) {
-            if (!estimatedCalls || estimatedCalls.length === 0) return {};
+        function getArrivalInfo(estimatedCalls) {
+            if (!estimatedCalls || !estimatedCalls.length) return null;
 
-            const arrivals = {};
-            const startIndex = estimatedCalls.findIndex(call =>
-                call.quay && (call.quay.id === currentQuayId)
-            );
+            const targetStop = STOP_CONFIG[selectedStop].label.toLowerCase();
+            const oppositeStop = STOP_CONFIG[STOP_CONFIG[selectedStop].opposite].label.toLowerCase();
 
-            if (startIndex === -1) return arrivals;
+            const match = estimatedCalls.find(call => {
+                if (!call.quay) return false;
+                const quayId = call.quay.id;
+                const quayText = (call.quay.name || '').toLowerCase();
 
-            for (let i = startIndex + 1; i < estimatedCalls.length; i++) {
-                const call = estimatedCalls[i];
-                if (!call.quay || !call.quay.name) continue;
-
-                const name = call.quay.name.toLowerCase();
-                const time = call.expectedArrivalTime || call.aimedArrivalTime;
-
-                if (!arrivals.jorpeland && (name.includes('jørpeland') || call.quay.id === QUAY_JORPELAND)) {
-                    arrivals.jorpeland = time;
+                if (selectedMode === 'from') {
+                    return quayId === QUAY_JORPELAND || quayText.includes(oppositeStop);
                 }
 
-                if (!arrivals.forsand && (name.includes('forsand') || call.quay.id === QUAY_FORSAND)) {
-                    arrivals.forsand = time;
-                }
-            }
+                return quayId === QUAY_FORSAND || quayText.includes(targetStop);
+            });
 
-            return arrivals;
+            if (!match) return null;
+            return match.expectedArrivalTime || match.aimedArrivalTime;
         }
 
         function renderSchedule(departures) {
-            const scheduleEl = document.getElementById('routeSchedule');
+            const scheduleRoot = document.getElementById('routeSchedule');
             if (!departures || !departures.length) {
-                scheduleEl.innerHTML = '<div class="no-departures">Ingen flere avganger registrert.</div>';
+                scheduleRoot.innerHTML = '<div class="empty-state">Ingen flere avganger registrert for valgt rute.</div>';
                 return;
             }
 
             const rows = departures.slice(0, 12).map(call => {
                 const time = formatTime(call.expectedDepartureTime || call.aimedDepartureTime);
-                const destination = (call.destinationDisplay && call.destinationDisplay.frontText) || 'Ukjent mål';
+                const destination = (call.destinationDisplay && call.destinationDisplay.frontText) || 'Ukjent destination';
                 const status = call.realtime ? 'Sanntid' : 'Planlagt';
                 return `
-                    <li class="route-schedule-row">
-                        <span class="route-schedule-time">${time}</span>
-                        <span class="route-schedule-dest">${destination}</span>
-                        <span class="route-schedule-status">${status}</span>
+                    <li class="schedule-row">
+                        <span class="schedule-time">${time}</span>
+                        <span class="schedule-destination">${destination}</span>
+                        <span class="schedule-status">${status}</span>
                     </li>
                 `;
             }).join('');
 
-            scheduleEl.innerHTML = `<ul class="route-schedule-grid">${rows}</ul>`;
+            scheduleRoot.innerHTML = `<ul class="schedule-grid">${rows}</ul>`;
         }
 
-        function renderDepartures(data) {
-            const content = document.getElementById('content');
-            const lastUpdated = document.querySelector('.last-updated');
-            const routeDetails = document.getElementById('routeDetails');
+        function renderList(data) {
+            const statusPanel = document.getElementById('statusPanel');
 
-            if (!data.quay || !data.quay.estimatedCalls || data.quay.estimatedCalls.length === 0) {
-                content.innerHTML = '<div class="no-departures">Det går ingen busser i helgen. Neste buss går mandag.</div>';
-                routeDetails.style.display = 'none';
+            if (!data.quay || !data.quay.estimatedCalls || !data.quay.estimatedCalls.length) {
+                statusPanel.innerHTML = '<div class="empty-state">Det går ingen busser i helgen. Neste buss går vanligvis mandag.</div>';
                 setNextBusSummary(null);
                 return;
             }
 
-            let departures = data.quay.estimatedCalls.filter(call => {
-                const depTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
-                return depTime.getTime() >= Date.now();
-            });
-
-            departures = departures.filter(call => getDirectionMatch(call, currentDirection));
+            let departures = data.quay.estimatedCalls
+                .filter(call => {
+                    const depTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
+                    return depTime.getTime() >= Date.now();
+                })
+                .filter(filterCalls);
 
             const nextDeparture = getNextDeparture(departures);
             setNextBusSummary(nextDeparture);
 
             if (!departures.length) {
-                const message = currentDirection === 'fra'
-                    ? 'Det går ingen busser fra Forsand i helgen. Neste buss går mandag.'
-                    : 'Det går ingen busser til Forsand i helgen. Neste buss går mandag.';
-                content.innerHTML = `<div class="no-departures">${message}</div>`;
-                routeDetails.style.display = 'none';
+                const targetStop = STOP_CONFIG[selectedStop].label;
+                const message = selectedMode === 'from'
+                    ? `Det går ingen busser fra ${targetStop} i denne retningen akkurat nå.`
+                    : `Det går ingen busser til ${targetStop} i denne retningen akkurat nå.`;
+                statusPanel.innerHTML = `<div class="empty-state">${message}</div>`;
                 return;
             }
 
-            let html = '<div class="departures">';
+            const cards = departures.slice(0, 10).map(call => {
+                const time = formatTime(call.expectedDepartureTime || call.aimedDepartureTime);
+                const line = call.serviceJourney && call.serviceJourney.line ? call.serviceJourney.line.publicCode : '?';
+                const destination = (call.destinationDisplay && call.destinationDisplay.frontText) || 'Ukjent';
+                const arrival = getArrivalInfo(call.serviceJourney.estimatedCalls);
+                const arrivalLabel = arrival ? `Ankommer ${formatTime(arrival)}` : 'Vis mer';
+                const timeClass = call.realtime ? 'realtime' : (call.expectedDepartureTime !== call.aimedDepartureTime ? 'delayed' : '');
 
-            departures.slice(0, 12).forEach(call => {
-                const isDelayed = call.expectedDepartureTime !== call.aimedDepartureTime;
-                const timeClass = call.realtime ? 'realtime' : (isDelayed ? 'delayed' : '');
-                const lineNumber = call.serviceJourney.line.publicCode;
-                const destination = call.destinationDisplay.frontText;
-                const departureTime = formatTime(call.expectedDepartureTime || call.aimedDepartureTime);
-                const countdown = getCountdown(call.expectedDepartureTime || call.aimedDepartureTime);
-
-                const arrivals = getArrivalTimes(call.serviceJourney.estimatedCalls);
-                let arrivalTimeHtml = '';
-
-                if (currentDirection === 'fra') {
-                    if (arrivals.jorpeland) {
-                        arrivalTimeHtml = `<div class="arrival-time">Ankommer ${formatTime(arrivals.jorpeland)}</div>`;
-                    }
-                } else if (arrivals.forsand) {
-                    arrivalTimeHtml = `<div class="arrival-time">Ankommer ${formatTime(arrivals.forsand)}</div>`;
-                }
-
-                html += `
-                    <div class="departure">
-                        <div class="line-number">${lineNumber}</div>
-                        <div class="destination">
-                            <div class="destination-name">${destination}</div>
-                            <div class="quay">${data.quay.name}</div>
+                return `
+                    <div class="departure-card">
+                        <div class="line-badge">${line}</div>
+                        <div class="departure-main">
+                            <p class="route-name">${destination}</p>
+                            <div class="route-stop">${data.quay.name}</div>
                         </div>
-                        <div class="time-info">
-                            <div class="departure-time ${timeClass}">${departureTime}</div>
-                            ${arrivalTimeHtml}
-                            <div class="countdown">${countdown}</div>
+                        <div class="time-side">
+                            <div class="departure-time ${timeClass}">${time}</div>
+                            <div class="time-sub">${arrivalLabel}</div>
+                            <div class="time-sub">${getCountdown(call.expectedDepartureTime || call.aimedDepartureTime)}</div>
                         </div>
                     </div>
                 `;
-            });
+            }).join('');
 
-            html += '</div>';
-            content.innerHTML = html;
+            statusPanel.innerHTML = `<div class="departures">${cards}</div>`;
             renderSchedule(departures);
-            routeDetails.style.display = 'block';
-
-            lastUpdated.textContent = `Sist oppdatert: ${new Date().toLocaleTimeString('no-NO')}`;
         }
 
         function showError(message) {
-            const content = document.getElementById('content');
-            content.innerHTML = `<div class="error">⚠️ Feil: ${message}</div>`;
+            document.getElementById('statusPanel').innerHTML = `<div class="error">Feil: ${message}</div>`;
         }
 
         async function updateDepartures() {
             try {
                 const data = await fetchDepartures();
-                renderDepartures(data);
+                renderList(data);
+                document.getElementById('lastUpdated').textContent = `Sist oppdatert: ${new Date().toLocaleTimeString('no-NO')}`;
             } catch (error) {
-                showError(error.message || 'Kunne ikke hente avganger');
+                console.error(error);
+                showError(error.message || 'Kunne ikke hente sanntidsdata');
             }
         }
 
-        function setDirection(direction) {
-            currentDirection = direction;
-            document.getElementById('btnFra').classList.toggle('active', direction === 'fra');
-            document.getElementById('btnTil').classList.toggle('active', direction === 'til');
-
-            currentQuayId = direction === 'fra' ? QUAY_FORSAND : QUAY_JORPELAND;
+        function setStop(stopKey) {
+            selectedStop = stopKey;
+            currentQuayId = STOP_CONFIG[stopKey].quayId;
+            updateHeader();
             updateDepartures();
         }
 
+        function setMode(mode) {
+            selectedMode = mode;
+            currentQuayId = selectedMode === 'from'
+                ? STOP_CONFIG[selectedStop].quayId
+                : STOP_CONFIG[STOP_CONFIG[selectedStop].opposite].quayId;
+            updateHeader();
+            updateDepartures();
+        }
+
+        document.querySelectorAll('.stop-btn').forEach(button => {
+            button.addEventListener('click', () => setStop(button.dataset.stop));
+        });
+
+        document.querySelectorAll('.mode-btn').forEach(button => {
+            button.addEventListener('click', () => setMode(button.dataset.mode));
+        });
+
+        updateHeader();
         updateDepartures();
         setInterval(updateDepartures, 60000);
-
-        document.getElementById('btnFra').addEventListener('click', () => setDirection('fra'));
-        document.getElementById('btnTil').addEventListener('click', () => setDirection('til'));
     </script>
 </body>
 </html>
