@@ -220,29 +220,6 @@
             box-shadow: 0 10px 18px rgba(13, 103, 99, 0.18);
         }
 
-        .mode-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .mode-toggle {
-            display: inline-flex;
-            gap: 6px;
-            background: rgba(13, 103, 99, 0.06);
-            border: 1px solid rgba(13,103,99,0.12);
-            border-radius: 12px;
-            padding: 5px;
-        }
-
-        .mode-btn {
-            padding: 10px 14px;
-            border-radius: 9px;
-            min-width: 120px;
-        }
-
         .last-updated {
             color: var(--muted);
             font-size: 0.76rem;
@@ -422,12 +399,11 @@
             .topbar { padding: 18px 18px 14px; }
             .topbar-inner { align-items: flex-start; flex-direction: column; }
             .hero { margin: -2px 14px 0; padding: 14px 16px 10px; }
-            .hero-top, .next-row, .mode-row { align-items: flex-start; flex-direction: column; }
+            .hero-top, .next-row { align-items: flex-start; flex-direction: column; }
             .next-meta { text-align: left; }
             .controls { padding: 14px 14px 0; }
             .stop-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .stop-btn, .mode-btn { width: 100%; }
-            .mode-toggle { width: 100%; }
+            .stop-btn { width: 100%; }
             .last-updated { width: 100%; text-align: right; }
             .departure-card { grid-template-columns: auto 1fr; gap: 10px 12px; }
             .time-side { grid-column: 2; text-align: left; }
@@ -463,14 +439,7 @@
                 <button class="stop-btn active" type="button" data-stop="forsand">Forsand</button>
                 <button class="stop-btn" type="button" data-stop="jorpeland">Jørpeland</button>
             </div>
-
-            <div class="mode-row">
-                <div class="mode-toggle" aria-label="Velg retning">
-                    <button class="mode-btn active" type="button" data-mode="from">Fra holdeplass</button>
-                    <button class="mode-btn" type="button" data-mode="to">Til holdeplass</button>
-                </div>
-                <div class="last-updated" id="lastUpdated">Laster data...</div>
-            </div>
+            <div class="last-updated" id="lastUpdated">Laster data...</div>
         </div>
 
         <div id="statusPanel" class="status-panel"></div>
@@ -492,18 +461,13 @@
         };
 
         let selectedStop = 'forsand';
-        let selectedMode = 'from';
         let currentQuayId = STOP_CONFIG[selectedStop].quayId;
 
         function updateHeader() {
             const stopName = STOP_CONFIG[selectedStop].label;
-            const title = selectedMode === 'from' ? `Buss fra ${stopName}` : `Buss til ${stopName}`;
-            document.getElementById('headerTitle').textContent = title;
+            document.getElementById('headerTitle').textContent = `Buss fra ${stopName}`;
             document.querySelectorAll('.stop-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.stop === selectedStop);
-            });
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.mode === selectedMode);
             });
         }
 
@@ -544,23 +508,19 @@
         function describeRouteTarget() {
             const stop = STOP_CONFIG[selectedStop];
             const opposite = STOP_CONFIG[stop.opposite].label;
-            return selectedMode === 'from' ? `Mot ${opposite}` : `Fra ${opposite}`;
-        }
-
-        function getMatchText() {
-            const stopName = STOP_CONFIG[selectedStop].label.toLowerCase();
-            return selectedMode === 'from'
-                ? (stopName === 'forsand' ? 'jørpeland' : 'forsand')
-                : stopName;
+            return `Mot ${opposite}`;
         }
 
         function filterCalls(call) {
+            const lineCode = (call.serviceJourney && call.serviceJourney.line && call.serviceJourney.line.publicCode) || '';
             const text = ((call.destinationDisplay && call.destinationDisplay.frontText) || '').toLowerCase();
-            const target = getMatchText();
-            if (selectedMode === 'from') {
-                return text.includes(target) || text.includes('stavanger');
+            const isLocalLine = lineCode === '120' || lineCode === '121';
+
+            if (selectedStop === 'forsand') {
+                return isLocalLine || (!lineCode && text.includes('jørpeland'));
             }
-            return text.includes(target);
+
+            return isLocalLine || (!lineCode && text.includes('forsand'));
         }
 
         function getNextDeparture(departures) {
@@ -581,6 +541,16 @@
             });
         }
 
+        function getNextServiceFallback() {
+            const now = new Date();
+            const next = new Date(now);
+            const day = next.getDay();
+            const daysUntilMonday = day === 0 ? 1 : (8 - day) % 7;
+            next.setDate(next.getDate() + (daysUntilMonday === 0 ? 7 : daysUntilMonday));
+            next.setHours(6, 24, 0, 0);
+            return next;
+        }
+
         function setNextBusSummary(nextDeparture) {
             const nextBusTime = document.getElementById('nextBusTime');
             const nextBusMeta = document.getElementById('nextBusMeta');
@@ -588,10 +558,11 @@
             const headerStatus = document.getElementById('headerStatus');
 
             if (!nextDeparture) {
-                nextBusTime.textContent = 'Ingen buss';
-                nextBusMeta.textContent = 'Ingen avganger funnet for valgt holdeplass og retning';
-                serviceState.textContent = 'Ingen rute';
-                headerStatus.textContent = 'Stengt';
+                const fallbackTime = getNextServiceFallback();
+                nextBusTime.textContent = formatTime(fallbackTime.toISOString());
+                nextBusMeta.textContent = `${formatDate(fallbackTime)} · ${describeRouteTarget()} · ${getCountdown(fallbackTime.toISOString())}`;
+                serviceState.textContent = 'Helg';
+                headerStatus.textContent = 'Helg';
                 return;
             }
 
@@ -663,19 +634,13 @@
         function getArrivalInfo(estimatedCalls) {
             if (!estimatedCalls || !estimatedCalls.length) return null;
 
-            const targetStop = STOP_CONFIG[selectedStop].label.toLowerCase();
-            const oppositeStop = STOP_CONFIG[STOP_CONFIG[selectedStop].opposite].label.toLowerCase();
+            const nextStop = STOP_CONFIG[selectedStop].opposite;
+            const targetName = STOP_CONFIG[nextStop].label.toLowerCase();
 
             const match = estimatedCalls.find(call => {
                 if (!call.quay) return false;
-                const quayId = call.quay.id;
                 const quayText = (call.quay.name || '').toLowerCase();
-
-                if (selectedMode === 'from') {
-                    return quayId === QUAY_JORPELAND || quayText.includes(oppositeStop);
-                }
-
-                return quayId === QUAY_FORSAND || quayText.includes(targetStop);
+                return quayText.includes(targetName) || call.quay.id === STOP_CONFIG[nextStop].quayId;
             });
 
             if (!match) return null;
@@ -709,7 +674,7 @@
             const statusPanel = document.getElementById('statusPanel');
 
             if (!data.quay || !data.quay.estimatedCalls || !data.quay.estimatedCalls.length) {
-                statusPanel.innerHTML = '<div class="empty-state">Det går ingen busser i helgen. Neste buss går vanligvis mandag.</div>';
+                statusPanel.innerHTML = '<div class="empty-state">Det går ingen busser i helgen. Neste buss går mandag.</div>';
                 setNextBusSummary(null);
                 return;
             }
@@ -726,10 +691,7 @@
 
             if (!departures.length) {
                 const targetStop = STOP_CONFIG[selectedStop].label;
-                const message = selectedMode === 'from'
-                    ? `Det går ingen busser fra ${targetStop} i denne retningen akkurat nå.`
-                    : `Det går ingen busser til ${targetStop} i denne retningen akkurat nå.`;
-                statusPanel.innerHTML = `<div class="empty-state">${message}</div>`;
+                statusPanel.innerHTML = `<div class="empty-state">Det går ingen busser fra ${targetStop} i helgen. Neste buss går mandag.</div>`;
                 return;
             }
 
@@ -783,21 +745,8 @@
             updateDepartures();
         }
 
-        function setMode(mode) {
-            selectedMode = mode;
-            currentQuayId = selectedMode === 'from'
-                ? STOP_CONFIG[selectedStop].quayId
-                : STOP_CONFIG[STOP_CONFIG[selectedStop].opposite].quayId;
-            updateHeader();
-            updateDepartures();
-        }
-
         document.querySelectorAll('.stop-btn').forEach(button => {
             button.addEventListener('click', () => setStop(button.dataset.stop));
-        });
-
-        document.querySelectorAll('.mode-btn').forEach(button => {
-            button.addEventListener('click', () => setMode(button.dataset.mode));
         });
 
         updateHeader();
