@@ -439,7 +439,7 @@
     </div>
 
     <script>
-        const QUAY_JORPELAND = 'NSR:Quay:48261';
+        const QUAY_JORPELAND = 'NSR:Quay:45500';
         const QUAY_FORSAND = 'NSR:Quay:48722';
         const ENTUR_API = 'https://api.entur.io/journey-planner/v3/graphql';
 
@@ -478,6 +478,16 @@
             const hours = Math.floor(diffMins / 60);
             const mins = diffMins % 60;
             return `Om ${hours}t ${mins}m`;
+        }
+
+        function getDirectionMatch(call, direction) {
+            const destinationText = ((call.destinationDisplay && call.destinationDisplay.frontText) || '').toLowerCase();
+
+            if (direction === 'fra') {
+                return destinationText.includes('jørpeland') || destinationText.includes('forsand');
+            }
+
+            return !destinationText.includes('jørpeland') && !destinationText.includes('forsand');
         }
 
         function getNextDeparture(departures) {
@@ -626,16 +636,7 @@
                 return depTime.getTime() >= Date.now();
             });
 
-            if (currentDirection === 'til') {
-                departures = departures.filter(call => {
-                    if (!call.serviceJourney || !call.serviceJourney.estimatedCalls) return false;
-                    return call.serviceJourney.estimatedCalls.some(estimatedCall =>
-                        estimatedCall.quay &&
-                        (estimatedCall.quay.id === QUAY_FORSAND ||
-                         (estimatedCall.quay.name && estimatedCall.quay.name.toLowerCase().includes('forsand')))
-                    );
-                });
-            }
+            departures = departures.filter(call => getDirectionMatch(call, currentDirection));
 
             const nextDeparture = getNextDeparture(departures);
             setNextBusSummary(nextDeparture);
