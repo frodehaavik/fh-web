@@ -113,13 +113,19 @@
 
         h2 { margin: 0; font-size: 19px; line-height: 1.25; }
 
-        .rain-summary { display: flex; align-items: baseline; gap: 5px; margin: 19px 0 15px; }
+        .rain-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 19px 0 15px; }
 
-        .rain-percent { font-size: 48px; font-weight: 730; line-height: 1; font-variant-numeric: tabular-nums; }
+        .rain-summary-group { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
 
-        .rain-percent-sign { color: var(--green); font-size: 23px; font-weight: 650; }
+        .rain-summary-group:last-child { align-items: flex-end; text-align: right; }
 
-        .rain-summary-label { margin-left: 8px; color: var(--muted); font-size: 12px; }
+        .rain-summary-value { display: flex; align-items: baseline; gap: 5px; }
+
+        .rain-percent, .rain-temperature { font-size: 48px; font-weight: 730; line-height: 1; font-variant-numeric: tabular-nums; }
+
+        .rain-percent-sign, .rain-temperature-unit { color: #f1c764; font-size: 23px; font-weight: 650; }
+
+        .rain-summary-label { color: #c5e0d6; font-size: 12px; }
 
         .forecast { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin: auto 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); list-style: none; }
 
@@ -199,10 +205,12 @@
             .rain-panel { min-height: 0; }
             .section-kicker { margin-bottom: 3px; font-size: 9px; }
             h2 { font-size: 16px; }
-            .rain-summary { gap: 3px; margin: 7px 0 8px; }
-            .rain-percent { font-size: 34px; }
-            .rain-percent-sign { font-size: 18px; }
-            .rain-summary-label { margin-left: 5px; font-size: 10px; }
+            .rain-summary { gap: 8px; margin: 7px 0 8px; }
+            .rain-summary-group { gap: 3px; }
+            .rain-summary-value { gap: 3px; }
+            .rain-percent, .rain-temperature { font-size: 34px; }
+            .rain-percent-sign, .rain-temperature-unit { font-size: 18px; }
+            .rain-summary-label { font-size: 10px; }
             .forecast { padding-top: 8px; }
             .forecast-time, .forecast-mm { font-size: 9px; }
             .rain-icon { height: 19px; margin: 2px auto; font-size: 14px; line-height: 19px; }
@@ -280,8 +288,18 @@
                     </div>
                 </div>
                 <div class="rain-summary" aria-live="polite">
-                    <span class="rain-percent" id="rain-percent">-</span><span class="rain-percent-sign">%</span>
-                    <span class="rain-summary-label" id="rain-summary-label">sannsynlighet</span>
+                    <div class="rain-summary-group">
+                        <div class="rain-summary-value">
+                            <span class="rain-percent" id="rain-percent">-</span><span class="rain-percent-sign">%</span>
+                        </div>
+                        <span class="rain-summary-label" id="rain-summary-label">sannsynlighet</span>
+                    </div>
+                    <div class="rain-summary-group">
+                        <div class="rain-summary-value">
+                            <span class="rain-temperature" id="rain-temperature">-</span><span class="rain-temperature-unit">°C</span>
+                        </div>
+                        <span class="rain-summary-label">temperatur</span>
+                    </div>
                 </div>
                 <ol class="forecast" id="forecast-hours" aria-label="Værprognose time for time"></ol>
                 <p class="weather-status" id="weather-status" role="status" aria-live="polite">Henter værmelding ...</p>
@@ -364,6 +382,7 @@
             const list = document.getElementById('forecast-hours');
             const percent = document.getElementById('rain-percent');
             const summary = document.getElementById('rain-summary-label');
+            const temperature = document.getElementById('rain-temperature');
 
             try {
                 const params = new URLSearchParams({
@@ -392,6 +411,7 @@
 
                 const maxProbability = Math.max(...upcoming.map(hour => hour.probability));
                 percent.textContent = String(maxProbability);
+                temperature.textContent = temperatureFormat.format(upcoming[0].temperature);
                 summary.textContent = maxProbability >= 60 ? 'høyeste risiko' : maxProbability >= 30 ? 'mulig regn' : 'liten regnfare';
                 list.replaceChildren();
                 for (const hour of upcoming) {
@@ -420,6 +440,7 @@
                 status.textContent = `Prognose fra Open-Meteo · oppdatert ${new Date().toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' })}`;
             } catch {
                 percent.textContent = '-';
+                temperature.textContent = '-';
                 summary.textContent = 'kunne ikke hentes';
                 list.replaceChildren();
                 status.textContent = 'Klarte ikke å hente værmelding akkurat nå.';
