@@ -92,9 +92,9 @@
 
         h1 {
             margin: 0;
-            font-size: clamp(2.1rem, 4.2vw, 3.3rem);
-            line-height: 0.96;
-            letter-spacing: -0.06em;
+            font-size: clamp(1.4rem, 3vw, 2.1rem);
+            line-height: 1;
+            letter-spacing: -0.04em;
         }
 
         .live-pill {
@@ -379,8 +379,8 @@
 
         <div class="controls">
             <div class="stop-picker" aria-label="Velg holdeplass">
-                <button class="stop-btn active" type="button" data-stop="forsand">Forsand – Bergekleiva B</button>
-                <button class="stop-btn" type="button" data-stop="jorpeland">Jørpeland – Strand rådhus</button>
+                <button class="stop-btn active" type="button" data-stop="forsand">Forsand</button>
+                <button class="stop-btn" type="button" data-stop="jorpeland">Jørpeland</button>
             </div>
             <div class="last-updated" id="lastUpdated">Laster data...</div>
         </div>
@@ -394,8 +394,8 @@
         const ENTUR_API = 'https://api.entur.io/journey-planner/v3/graphql';
 
         const STOP_CONFIG = {
-            forsand: { label: 'Forsand – Bergekleiva B', quayId: QUAY_FORSAND, opposite: 'jorpeland' },
-            jorpeland: { label: 'Jørpeland – Strand rådhus', quayId: QUAY_JORPELAND, opposite: 'forsand' }
+            forsand: { label: 'Forsand', quayId: QUAY_FORSAND, opposite: 'jorpeland' },
+            jorpeland: { label: 'Jørpeland', quayId: QUAY_JORPELAND, opposite: 'forsand' }
         };
 
         let selectedStop = 'forsand';
