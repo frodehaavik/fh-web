@@ -248,82 +248,21 @@
             background: rgba(209, 87, 84, 0.04);
         }
 
-        .route-details {
-            margin: 0 18px 18px;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            background: rgba(255,255,255,0.72);
-            overflow: hidden;
-        }
-
-        .route-details summary {
-            list-style: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            font-size: 0.77rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--brand);
-            font-weight: 800;
-        }
-
-        .route-details summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .route-details[open] summary {
-            border-bottom: 1px solid var(--line);
-            background: rgba(13,103,99,0.04);
-        }
-
-        .route-schedule {
-            padding: 10px 14px 14px;
-        }
-
-        .schedule-grid {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            gap: 8px;
-        }
-
-        .schedule-row {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 10px;
-            align-items: center;
-            padding: 9px 10px;
-            border-radius: 10px;
-            border: 1px solid var(--line);
-            background: rgba(255,255,255,0.8);
-            color: var(--ink);
-            font-size: 0.84rem;
-        }
-
-        .schedule-time {
-            font-weight: 800;
-            color: var(--brand);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .schedule-destination {
-            font-weight: 700;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .schedule-status {
-            color: var(--muted);
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
         .departures {
             padding: 0 18px 18px;
+        }
+
+        .show-more {
+            width: 100%;
+            border: 1px solid rgba(13, 103, 99, 0.15);
+            background: rgba(13, 103, 99, 0.05);
+            color: var(--brand);
+            font: inherit;
+            font-weight: 800;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 12px;
+            cursor: pointer;
         }
 
         .departure-card {
@@ -436,32 +375,28 @@
 
         <div class="controls">
             <div class="stop-picker" aria-label="Velg holdeplass">
-                <button class="stop-btn active" type="button" data-stop="forsand">Forsand</button>
-                <button class="stop-btn" type="button" data-stop="jorpeland">Jørpeland</button>
+                <button class="stop-btn active" type="button" data-stop="forsand">Forsand – Bergekleiva B</button>
+                <button class="stop-btn" type="button" data-stop="jorpeland">Jørpeland – Strand rådhus</button>
             </div>
             <div class="last-updated" id="lastUpdated">Laster data...</div>
         </div>
 
         <div id="statusPanel" class="status-panel"></div>
-
-        <details id="routeDetails" class="route-details">
-            <summary>Vis hele ruten</summary>
-            <div id="routeSchedule" class="route-schedule"></div>
-        </details>
     </div>
 
     <script>
         const QUAY_FORSAND = 'NSR:Quay:48722';
-        const QUAY_JORPELAND = 'NSR:Quay:45500';
+        const QUAY_JORPELAND = 'NSR:Quay:48261';
         const ENTUR_API = 'https://api.entur.io/journey-planner/v3/graphql';
 
         const STOP_CONFIG = {
-            forsand: { label: 'Forsand', quayId: QUAY_FORSAND, opposite: 'jorpeland' },
-            jorpeland: { label: 'Jørpeland', quayId: QUAY_JORPELAND, opposite: 'forsand' }
+            forsand: { label: 'Forsand – Bergekleiva B', quayId: QUAY_FORSAND, opposite: 'jorpeland' },
+            jorpeland: { label: 'Jørpeland – Strand rådhus', quayId: QUAY_JORPELAND, opposite: 'forsand' }
         };
 
         let selectedStop = 'forsand';
         let currentQuayId = STOP_CONFIG[selectedStop].quayId;
+        let expandedList = false;
 
         function updateHeader() {
             const stopName = STOP_CONFIG[selectedStop].label;
@@ -511,34 +446,60 @@
             return `Mot ${opposite}`;
         }
 
-        function filterCalls(call) {
-            const lineCode = (call.serviceJourney && call.serviceJourney.line && call.serviceJourney.line.publicCode) || '';
-            const text = ((call.destinationDisplay && call.destinationDisplay.frontText) || '').toLowerCase();
-            const isLocalLine = lineCode === '120' || lineCode === '121';
+        function getLocalFallbackDeparture() {
+            const now = new Date();
+            const nextMonday = new Date(now);
+            const day = now.getDay();
+            const offset = day === 1 ? 7 : ((8 - day) % 7 || 7);
+            nextMonday.setDate(now.getDate() + offset);
 
-            if (selectedStop === 'forsand') {
-                return isLocalLine || (!lineCode && text.includes('jørpeland'));
-            }
+            const minutes = selectedStop === 'forsand' ? 24 : 49;
+            const destination = selectedStop === 'forsand' ? 'Jørpeland' : 'Forsand skule';
+            nextMonday.setHours(6, minutes, 0, 0);
 
-            return isLocalLine || (!lineCode && text.includes('forsand'));
+            return {
+                expectedDepartureTime: nextMonday.toISOString(),
+                aimedDepartureTime: nextMonday.toISOString(),
+                realtime: false,
+                destinationDisplay: { frontText: destination },
+                serviceJourney: { line: { publicCode: '120' } }
+            };
         }
 
-        function getNextDeparture(departures) {
+        function filterCalls(call) {
+            const lineCode = ((call.serviceJourney && call.serviceJourney.line && call.serviceJourney.line.publicCode) || '').toUpperCase();
+            const text = ((call.destinationDisplay && call.destinationDisplay.frontText) || '').toLowerCase();
+            const isWantedLine = lineCode === '120' || lineCode === 'SK2901';
+
+            if (!isWantedLine) {
+                return false;
+            }
+
+            if (selectedStop === 'forsand') {
+                return text.includes('jørpeland') || text.includes('forsand') || text.includes('berg') || text.includes('vgs') || text.includes('skule') || text.includes('strand');
+            }
+
+            return text.includes('forsand') || text.includes('jørpeland') || text.includes('berg') || text.includes('vgs') || text.includes('skule') || text.includes('strand');
+        }
+
+        function getNextDeparture(departures, offset = 1) {
             if (!Array.isArray(departures) || !departures.length) return null;
 
             const now = Date.now();
-            const future = departures.filter(call => {
-                const departureTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
-                return departureTime.getTime() >= now;
-            });
+            const future = departures
+                .filter(call => {
+                    const departureTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
+                    return departureTime.getTime() >= now;
+                })
+                .sort((a, b) => {
+                    const aTime = new Date(a.expectedDepartureTime || a.aimedDepartureTime).getTime();
+                    const bTime = new Date(b.expectedDepartureTime || b.aimedDepartureTime).getTime();
+                    return aTime - bTime;
+                });
 
             if (!future.length) return null;
-
-            return future.reduce((earliest, current) => {
-                const earliestTime = new Date(earliest.expectedDepartureTime || earliest.aimedDepartureTime).getTime();
-                const currentTime = new Date(current.expectedDepartureTime || current.aimedDepartureTime).getTime();
-                return currentTime < earliestTime ? current : earliest;
-            });
+            const index = Math.max(0, Math.min(offset, future.length - 1));
+            return future[index];
         }
 
         function getNextServiceFallback() {
@@ -575,11 +536,11 @@
             headerStatus.textContent = isWeekend(departureTime) ? 'Helg' : 'Live';
         }
 
-        async function fetchDepartures() {
+        async function fetchDeparturesForQuay(quayId) {
             try {
                 const query = `
                     query {
-                      quay(id: "${currentQuayId}") {
+                      quay(id: "${quayId}") {
                         name
                         estimatedCalls(numberOfDepartures: 80, timeRange: 604800) {
                           expectedDepartureTime
@@ -631,6 +592,10 @@
             }
         }
 
+        async function fetchDepartures() {
+            return fetchDeparturesForQuay(currentQuayId);
+        }
+
         function getArrivalInfo(estimatedCalls) {
             if (!estimatedCalls || !estimatedCalls.length) return null;
 
@@ -647,55 +612,72 @@
             return match.expectedArrivalTime || match.aimedArrivalTime;
         }
 
-        function renderSchedule(departures) {
-            const scheduleRoot = document.getElementById('routeSchedule');
-            if (!departures || !departures.length) {
-                scheduleRoot.innerHTML = '<div class="empty-state">Ingen flere avganger registrert for valgt rute.</div>';
-                return;
+        function buildFallbackDepartures() {
+            const now = new Date();
+            const nextMonday = new Date(now);
+            const day = now.getDay();
+            const daysUntilMonday = day === 1 ? 7 : ((8 - day) % 7 || 7);
+            nextMonday.setDate(now.getDate() + daysUntilMonday);
+
+            const times = selectedStop === 'forsand'
+                ? [6, 24, 8, 0, 9, 49, 11, 44, 15, 24]
+                : [6, 49, 8, 30, 10, 45, 13, 15, 15, 50];
+
+            const destination = selectedStop === 'forsand' ? 'Jørpeland' : 'Forsand skule';
+            return times.reduce((list, value, index) => {
+                if (index % 2 === 0) {
+                    const hour = value;
+                    const minute = times[index + 1];
+                    const dt = new Date(nextMonday);
+                    dt.setHours(hour, minute, 0, 0);
+                    list.push({
+                        expectedDepartureTime: dt.toISOString(),
+                        aimedDepartureTime: dt.toISOString(),
+                        realtime: false,
+                        destinationDisplay: { frontText: destination },
+                        serviceJourney: { line: { publicCode: '120' } }
+                    });
+                }
+                return list;
+            }, []);
+        }
+
+        function getRelevantDepartures(data) {
+            if (!data || !data.quay || !data.quay.estimatedCalls || !data.quay.estimatedCalls.length) {
+                return buildFallbackDepartures();
             }
 
-            const rows = departures.slice(0, 12).map(call => {
-                const time = formatTime(call.expectedDepartureTime || call.aimedDepartureTime);
-                const destination = (call.destinationDisplay && call.destinationDisplay.frontText) || 'Ukjent destination';
-                const status = call.realtime ? 'Sanntid' : 'Planlagt';
-                return `
-                    <li class="schedule-row">
-                        <span class="schedule-time">${time}</span>
-                        <span class="schedule-destination">${destination}</span>
-                        <span class="schedule-status">${status}</span>
-                    </li>
-                `;
-            }).join('');
+            const departures = data.quay.estimatedCalls
+                .filter(call => {
+                    const depTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
+                    return depTime.getTime() >= Date.now();
+                })
+                .filter(filterCalls)
+                .sort((a, b) => {
+                    const aTime = new Date(a.expectedDepartureTime || a.aimedDepartureTime).getTime();
+                    const bTime = new Date(b.expectedDepartureTime || b.aimedDepartureTime).getTime();
+                    return aTime - bTime;
+                });
 
-            scheduleRoot.innerHTML = `<ul class="schedule-grid">${rows}</ul>`;
+            return departures.length ? departures : buildFallbackDepartures();
         }
 
         function renderList(data) {
             const statusPanel = document.getElementById('statusPanel');
 
-            if (!data.quay || !data.quay.estimatedCalls || !data.quay.estimatedCalls.length) {
-                statusPanel.innerHTML = '<div class="empty-state">Det går ingen busser i helgen. Neste buss går mandag.</div>';
-                setNextBusSummary(null);
-                return;
-            }
-
-            let departures = data.quay.estimatedCalls
-                .filter(call => {
-                    const depTime = new Date(call.expectedDepartureTime || call.aimedDepartureTime);
-                    return depTime.getTime() >= Date.now();
-                })
-                .filter(filterCalls);
-
-            const nextDeparture = getNextDeparture(departures);
+            let departures = getRelevantDepartures(data);
+            const nextDeparture = getNextDeparture(departures, 1);
             setNextBusSummary(nextDeparture);
 
-            if (!departures.length) {
+            if (!departures.length || !data || !data.quay || !data.quay.estimatedCalls || !data.quay.estimatedCalls.length) {
                 const targetStop = STOP_CONFIG[selectedStop].label;
-                statusPanel.innerHTML = `<div class="empty-state">Det går ingen busser fra ${targetStop} i helgen. Neste buss går mandag.</div>`;
+                statusPanel.innerHTML = `<div class="empty-state">Ingen lokale avganger funnet fra ${targetStop}. Neste lokal buss går mandag.</div>`;
                 return;
             }
 
-            const cards = departures.slice(0, 10).map(call => {
+            const defaultVisibleCount = 4;
+            const visibleDepartures = expandedList ? departures : departures.slice(0, defaultVisibleCount);
+            const cards = visibleDepartures.map(call => {
                 const time = formatTime(call.expectedDepartureTime || call.aimedDepartureTime);
                 const line = call.serviceJourney && call.serviceJourney.line ? call.serviceJourney.line.publicCode : '?';
                 const destination = (call.destinationDisplay && call.destinationDisplay.frontText) || 'Ukjent';
@@ -719,8 +701,20 @@
                 `;
             }).join('');
 
-            statusPanel.innerHTML = `<div class="departures">${cards}</div>`;
-            renderSchedule(departures);
+            let buttonMarkup = '';
+            if (departures.length > defaultVisibleCount) {
+                buttonMarkup = `<button class="show-more" type="button">${expandedList ? 'Vis færre' : 'Vis flere ruter'}</button>`;
+            }
+
+            statusPanel.innerHTML = `<div class="departures">${cards}${buttonMarkup}</div>`;
+
+            const button = statusPanel.querySelector('.show-more');
+            if (button) {
+                button.addEventListener('click', () => {
+                    expandedList = !expandedList;
+                    updateDepartures();
+                });
+            }
         }
 
         function showError(message) {
@@ -741,6 +735,7 @@
         function setStop(stopKey) {
             selectedStop = stopKey;
             currentQuayId = STOP_CONFIG[stopKey].quayId;
+            expandedList = false;
             updateHeader();
             updateDepartures();
         }
